@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Рейс 0.0: Aeterna — ретро-футуристический хаб станции</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0f1a, #03060c);
+            font-family: 'Courier New', 'Fira Code', 'VT323', monospace;
+            color: #c0e0ff;
+            line-height: 1.45;
+            padding: 2rem 1rem;
+        }
+
+        /* ретро-футуристический контейнер с "металлическим" свечением */
+        .site-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(8, 12, 20, 0.75);
+            backdrop-filter: blur(2px);
+            border: 1px solid #2a4c6e;
+            box-shadow: 0 0 30px rgba(0, 180, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+            border-radius: 28px;
+            overflow: hidden;
+        }
+
+        /* хедер с индикаторами станции */
+        .header {
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #1f5e7e;
+            background: rgba(0, 5, 10, 0.7);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+        .title-section h1 {
+            font-size: 2.2rem;
+            letter-spacing: 3px;
+            font-weight: normal;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #c4e6ff, #7ab3c8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px #004466;
+        }
+        .title-section p {
+            font-size: 0.8rem;
+            color: #8bb5d0;
+            border-left: 3px solid #2c8fbb;
+            padding-left: 12px;
+            margin-top: 8px;
+        }
+        .status-panel {
+            font-family: monospace;
+            background: #010a12;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            border: 1px solid #2f6f8a;
+            font-size: 0.75rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+        .status-panel span {
+            color: #7df9ff;
+            font-weight: bold;
+        }
+
+        /* вкладки (terminal style) */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            background: #030c14;
+            border-bottom: 1px solid #1c4c64;
+            padding-left: 1rem;
+            gap: 0.2rem;
+        }
+        .tab-btn {
+            background: #07141e;
+            border: none;
+            color: #9bc2db;
+            font-family: monospace;
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 0.8rem 1.6rem;
+            margin: 0;
+            cursor: pointer;
+            transition: 0.2s;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover {
+            background: #0b2332;
+            color: #e0f0ff;
+            border-bottom-color: #3f9fcf;
+        }
+        .tab-btn.active {
+            background: #0b1723;
+            color: #f0fcff;
+            border-bottom: 2px solid #4cc9f0;
+            box-shadow: inset 0 1px 0 #2e7d9e;
+        }
+
+        /* контент вкладок */
+        .tab-content {
+            display: none;
+            padding: 2rem 2rem 2.2rem;
+            animation: fade 0.25s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* стили таблиц, карточек, сеток */
+        .section-title {
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid #3da2c7;
+            padding-left: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: #0c1622dd;
+            border: 1px solid #2b5570;
+            border-radius: 20px;
+            padding: 1.2rem;
+            backdrop-filter: blur(2px);
+            transition: 0.1s linear;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .card h3 {
+            font-size: 1.3rem;
+            border-bottom: 1px dashed #3a788e;
+            display: inline-block;
+            margin-bottom: 0.6rem;
+            color: #cae9ff;
+        }
+        .card p, .card li {
+            font-size: 0.85rem;
+            color: #bbd4f0;
+        }
+        .badge {
+            background: #0f2c38;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+            background: #07101b;
+        }
+        th, td {
+            border: 1px solid #2f5b72;
+            padding: 10px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #0b1f2c;
+            color: #c2e2ff;
+            font-weight: bold;
+        }
+        .warning-note {
+            background: #1a2a1f;
+            border-left: 6px solid #e0b03b;
+            padding: 12px 16px;
+            margin: 20px 0;
+            font-size: 0.8rem;
+            color: #ffecb3;
+        }
+        hr {
+            border-color: #22506a;
+            margin: 20px 0;
+        }
+        footer {
+            text-align: center;
+            padding: 1.2rem;
+            font-size: 0.7rem;
+            border-top: 1px solid #1b4c64;
+            background: #02090e;
+            color: #5f8faa;
+        }
+        a {
+            color: #7bc5e8;
+            text-decoration: none;
+        }
+        @media (max-width: 700px) {
+            .tabs { padding-left: 0.2rem; }
+            .tab-btn { padding: 0.5rem 0.8rem; font-size: 0.7rem;}
+            .tab-content { padding: 1.2rem; }
+            .header { flex-direction: column; align-items: flex-start;}
+        }
+    </style>
+</head>
+<body>
+<div class="site-container">
+    <div class="header">
+        <div class="title-section">
+            <h1>РЕЙС 0.0: «AETERNA»</h1>
+            <p>▸ ретро-футуризм / выживание / социальная драма<br>▸ последний оплот человечества в пустоте</p>
+        </div>
+        <div class="status-panel">
+            <div>📡 СТАТУС: <span>СТАБИЛЬНАЯ ДЕГРАДАЦИЯ</span></div>
+            <div>👥 ПЕРСОНАЛ: <span>неизвестно</span> &nbsp;|&nbsp; ПАССАЖИРЫ: <span>неизвестно</span></div>
+            <div>⏱ ЦИКЛ: <span>ХХХХ</span></div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab1">📀 ОСНОВНОЙ СВОД</button>
+        <button class="tab-btn" data-tab="tab2">🏠 ЖИЛЬЁ & ЭКОНОМИКА</button>
+        <button class="tab-btn" data-tab="tab3">⚙️ РАБОТА (ЗАДАНИЯ)</button>
+        <button class="tab-btn" data-tab="tab4">🗺️ АТЛАС СТАНЦИИ</button>
+        <button class="tab-btn" data-tab="tab5">⚠️ УГРОЗЫ & ПРАВИЛА</button>
+    </div>
+
+    <!-- Вкладка 1: Свод правил и валюта -->
+    <div id="tab1" class="tab-content active">
+        <div class="section-title">⟡ КОНЦЕПЦИЯ & ВАЛЮТА</div>
+        <div class="grid-cards">
+            <div class="card"><h3>📟 КРЕДИТ (Cr)</h3><p>Единая цифровая валюта станции. ID-чип вместо наличных. Зарабатывай заданиями, услугами, продажей хлама. <strong>Штраф за безделье:</strong> если не работал 7 циклов — «Нерадивый» → -5 Cr/сутки. Банкротство = принудительные работы.</p></div>
+            <div class="card"><h3>📦 СТАРТОВЫЙ НАБОР</h3><p>Капсула 2×2 м, заношенный комбинезон, личный ID, 0 кредитов. Добро пожаловать в адскую рутину.</p><div class="badge">никаких "звёздных героев"</div></div>
+            <div class="card"><h3>🔄 СМЕРТЬ — НЕ КОНЕЦ</h3><p>Погиб? Администрация выдаст нового персонажа с долгом (отрицательный баланс). Игра продолжается, но долг давит.</p></div>
+        </div>
+        <div class="warning-note">⚠️ Администрация «Аэтерны» не прощает саботаж. Кражи, нелегальный взлом ID ведут к депортации в тех-секторы или штрафу до 500 Cr.</div>
+        <div class="section-title">⟡ БЫТОВЫЕ РАСХОДЫ (ежедневные удержания)</div>
+        <table>
+            <tr><th>Услуга</th><th>Стоимость (Cr)</th><th>Примечание</th></tr>
+            <tr><td>Прокат скафандра</td><td>15 за выход</td><td>если нет своего</td></tr>
+            <tr><td>Улучшенный паёк (кофе/мясо)</td><td>5–8</td><td>бесплатно — только безвкусная каша</td></tr>
+            <tr><td>Внутренняя сеть (ЛС, форум)</td><td>10 / неделя</td><td>автосписание</td></tr>
+            <tr><td>Улучшенная вентиляция</td><td>+20 / неделя</td><td>снижает риск затхлого воздуха</td></tr>
+            <tr><td>Стирка комбинезона</td><td>2</td><td>руками бесплатно, но долго</td></tr>
+        </table>
+    </div>
+
+    <!-- Вкладка 2: Жильё и экономика (подробные таблицы) -->
+    <div id="tab2" class="tab-content">
+        <div class="section-title">🏚️ ЖИЛОЙ ФОНД СТАНЦИИ</div>
+        <p><em>цены в кредитах, сроки накопления для среднего игрока (40–70 Cr/день)</em></p>
+        <h3>🔹 Индивидуальное жильё</h3>
+        <table>
+            <tr><th>Тип</th><th>Размер</th><th>Цена (Cr)</th><th>Срок накопления</th><th>Бонусы</th></tr>
+            <tr><td>Стартовая Капсула</td><td>2×2 м</td><td>0</td><td>—</td><td>кровать-трансформер, общий душ/туалет</td></tr>
+            <tr><td>Расширенная Ячейка</td><td>3×3 м</td><td>600</td><td>~2 недели</td><td>раковина с техводой, розетка, верстак</td></tr>
+            <tr><td>Жилой Модуль «Стандарт»</td><td>4×5 м</td><td>2 500</td><td>1,5–2 мес.</td><td>санузел, кухонная панель, умный дом</td></tr>
+            <tr><td>Технический Блок / Мастерская</td><td>2× (4×4 м)</td><td>6 000</td><td>~6 мес.</td><td>повышенный лимит энергии, мощное оборудование</td></tr>
+            <tr><td>Офицерские Апартаменты</td><td>гостиная+спальня</td><td>15 000</td><td>элитное</td><td>бронированный иллюминатор, прямая связь с Администрацией</td></tr>
+        </table>
+        <h3>👥 Совместное жильё (2+ игрока)</h3>
+        <table>
+            <tr><th>Тип</th><th>Размер</th><th>Цена</th><th>Особенности</th></tr>
+            <tr><td>Сдвоенная Капсула</td><td>4×2 м</td><td>900 Cr</td><td>две двухъярусные койки, общий счётчик энергии</td></tr>
+            <tr><td>Жилой Блок «Тандем»</td><td>5×5 м</td><td>3 500 Cr</td><td>две кровати/одна большая, кухня, санузел, повышенная норма O₂</td></tr>
+            <tr><td>Профессиональный Отсек</td><td>6×6 м</td><td>8 000 Cr</td><td>две спальни-капсулы + общая гостиная-мастерская, усиленная звукоизоляция</td></tr>
+        </table>
+        <div class="warning-note">⚖️ Правила совместки: Единая квитанция, риск выселения при потере соседа. Кражи между жильцами возможны — сюжетный крючок.</div>
+    </div>
+
+    <!-- Вкладка 3: Задания / Работа (полный спектр) -->
+    <div id="tab3" class="tab-content">
+        <div class="section-title">🛠️ РАБОТА (СВОДКА АДМИНИСТРАЦИИ)</div>
+        <p>Ежедневные заказы на терминалах. Максимум заданий ограничен — никакого соло-фарма.</p>
+        
+        <h3>🟢 НИЗКАЯ ОПЛАТА (10–25 Cr) — не более 4 в день</h3>
+        <div class="grid-cards">
+            <div class="card"><span>Сбор конденсата в тех-секторе</span><div class="badge">12 Cr</div></div>
+            <div class="card"><span>Чистка синтезаторов каши</span><div class="badge">10 Cr</div></div>
+            <div class="card"><span>Сортировка био-массы</span><div class="badge">15 Cr</div></div>
+            <div class="card"><span>Курьерская доставка архивов</span><div class="badge">20 Cr</div></div>
+            <div class="card"><span>Полировка иллюминаторов</span><div class="badge">18 Cr</div></div>
+            <div class="card"><span>Утилизация тюбиков в дробилке</span><div class="badge">10 Cr</div></div>
+            <div class="card"><span>Помощь в прачечной</span><div class="badge">14 Cr</div></div>
+            <div class="card"><span>Замена фильтров на кухнях</span><div class="badge">22 Cr</div></div>
+        </div>
+        <h3>🟡 СРЕДНЯЯ ОПЛАТА (40–70 Cr) — 1 в день</h3>
+        <div class="grid-cards">
+            <div class="card">Калибровка датчиков давления <span class="badge">50 Cr</span></div>
+            <div class="card">Патрулирование «Тихих зон» <span class="badge">60 Cr</span></div>
+            <div class="card">Ремонт высоковольтных ламп в ангаре <span class="badge">65 Cr</span></div>
+            <div class="card">Прошивка инфо-терминалов <span class="badge">45 Cr</span></div>
+            <div class="card">Настройка дронов-уборщиков <span class="badge">60 Cr</span></div>
+            <div class="card">Ассистирование врачу <span class="badge">50 Cr</span></div>
+        </div>
+        <h3>🔴 ВЫСОКАЯ ОПЛАТА (100–200 Cr) — не более 2 раз в неделю (риск травм, облучения)</h3>
+        <table>
+            <tr><td>Латание обшивки (выход в открытый космос)</td><td>180 Cr</td></tr>
+            <tr><td>Зачистка реакторного кольца (радиоактивный шлам)</td><td>200 Cr</td></tr>
+            <tr><td>Подавление беспорядков в эконом-блоках</td><td>150 Cr</td></tr>
+            <tr><td>Замена горячего энергоблока</td><td>190 Cr</td></tr>
+            <tr><td>Отлов сбежавших крыс в вентиляции</td><td>120 Cr</td></tr>
+            <tr><td>Экспедиция за борт — сбор космического мусора</td><td>200 Cr</td></tr>
+        </table>
+        <div class="warning-note">❗ Внимание: высокооплачиваемые задания могут привести к травмам, радиационному заражению или встрече с аномалиями. Администрация не оплачивает лечение.</div>
+    </div>
+
+    <!-- Вкладка 4: Атлас станции (все зоны с опасностями и крючками) -->
+    <div id="tab4" class="tab-content">
+        <div class="section-title">🌌 КАРТА СТАНЦИИ «AETERNA» — ОТСЕКИ И ТАЙНЫ</div>
+        <p>Семь логических зон, каждая дышит своей угрозой. Ниже — выжимка локаций, полный архив в бортовом журнале.</p>
+        
+        <h3>🏚️ ЖИЛАЯ ЗОНА (The Warrens)</h3>
+        <div class="grid-cards">
+            <div class="card"><strong>Капсульный ряд «E-0»</strong><br>Тысячи 2×2 м. Крысы-мутанты, граффити «Они слушают».</div>
+            <div class="card"><strong>Ячейки «D-7»</strong><br>3×3, розетки. Сосед сверху не платит за ремонт, Администрация грозит выселением блока.</div>
+            <div class="card"><strong>Тандем-блоки</strong><br>Совместное жильё. Предыдущий жилец повесился — теперь «холодное пятно».</div>
+            <div class="card"><strong>Апартаменты «Аэтерна-Виста»</strong><br>Элитный коридор, прямая связь с Администрацией. Чтобы жить здесь, нужно стать «Полезным лицом».</div>
+        </div>
+        <h3>⚙️ ПРОИЗВОДСТВО И ТЕХЗОНА</h3>
+        <div class="grid-cards">
+            <div class="card"><strong>Синтезаторная №3</strong><br>Кормит 80% станции. В каше находят человеческий зуб. Анализатор врёт про белок.</div>
+            <div class="card"><strong>Реакторное кольцо</strong><br>Радиоактивный периметр. 3 техника исчезли, их ID-чипы мигают в сердце реактора.</div>
+            <div class="card"><strong>Холодильник «Мороз»</strong><br>-40°C, хранилище. Кто-то отключил сигнализацию сектора B.</div>
+            <div class="card"><strong>Свалка контейнеров</strong><br>Бесплатные запчасти. В одном контейнере живой человек, забытый экипажем.</div>
+        </div>
+        <h3>🏛️ АДМИНИСТРАТИВНЫЕ И РЕЖИМНЫЕ ЗОНЫ</h3>
+        <div class="grid-cards">
+            <div class="card"><strong>Центральный узел связи</strong><br>ИИ станции отвечает с задержкой 0.3 сек. Говорят, он мёртв, а голос — запись.</div>
+            <div class="card"><strong>Архив личных дел</strong><br>Хранилище ID. Папка «Экипаж Земля-1» засекречена, последнее открытие — сегодня в 3 утра.</div>
+            <div class="card"><strong>Блок депортации</strong><br>Двери открываются не наружу, а вверх. Никто не вернулся.</div>
+        </div>
+        <h3>🩺 МЕДИЦИНА И НАУКА / ТОРГОВЛЯ И УСЛУГИ</h3>
+        <div class="grid-cards">
+            <div class="card"><strong>Лазарет общего доступа</strong><br>У трёх пациентов одинаковый симптом: молчат и смотрят в стену. За стеной — вакуум.</div>
+            <div class="card"><strong>Рынок «Стыковка»</strong><br>Продажа краденых ID и самодельного оружия. Торговец «земными артефактами» под колпаком.</div>
+            <div class="card"><strong>Бар «Пустота»</strong><br>Хозяин не пьёт и не спит, его имени нет в ID-базе.</div>
+            <div class="card"><strong>Чёрный рынок ID</strong><br>Смена личности. Один из «воскрешённых» встретил себя настоящего.</div>
+        </div>
+        <h3>☣️ ЗАБРОШЕННЫЕ И ОПАСНЫЕ ЗОНЫ / ВНЕШНИЙ КОСМОС</h3>
+        <div class="grid-cards">
+            <div class="card"><strong>Затопленный отсек</strong><br>2 метра техжидкости. В жидкости кто-то живёт и таскает инструменты.</div>
+            <div class="card"><strong>Тихие зоны (уровень 4-6)</strong><br>Ритмичный стук азбукой Морзе: «ПОМОГИТЕ».</div>
+            <div class="card"><strong>Отсек 0.0 (мифический)</strong><br>Запечатан 12 лет назад. Вчера ID-сканер показал дверь открытой, внутри свежий след ботинка.</div>
+            <div class="card"><strong>Космическая свалка «Ржавчина»</strong><br>Найден спящий человек с ID «Экипаж Земля-1». Ему 150 лет. Он открыл глаза.</div>
+        </div>
+        <div class="warning-note">⚠️ Станция живая. В «Тихих зонах» сталкеры, неизвестные шумы, а некоторые отсеки числятся на карте, но никто не знает, как туда попасть.</div>
+    </div>
+
+    <!-- Вкладка 5: Угрозы, регламенты, правила выживания -->
+    <div id="tab5" class="tab-content">
+        <div class="section-title">📜 ПАМЯТКА ПЕРСОНАЛА И ПАССАЖИРА</div>
+        <div class="grid-cards">
+            <div class="card"><h3>⚖️ ПРЕСТУПЛЕНИЯ И НАКАЗАНИЯ</h3><p>Кражи, саботаж, нелегальное прошивание ID → депортация в тех-секторы (принудительные работы) или штраф до 500 Cr. Рецидивистов отправляют в «Блок депортации».</p></div>
+            <div class="card"><h3>📉 ЭКОНОМИЧЕСКАЯ ДЕПРИВАЦИЯ</h3><p>Если на счету меньше 0 Cr в течение 5 циклов — принудительный контракт на опасные работы с удержанием 70% дохода. Банкротство = списание в тех-рабы.</p></div>
+            <div class="card"><h3>🧠 ПСИХОЛОГИЧЕСКАЯ НАГРУЗКА</h3><p>Зал психологической разгрузки (10 Cr/сеанс) снижает стресс. Но вчера в записи леса кто-то закричал. Администрация молчит.</p></div>
+        </div>
+        <div class="warning-note">🚨 Важное правило: «Смерть персонажа — не конец». Вы берёте нового с долгом перед Администрацией (отрицательный баланс, стартовая капсула). Старая память остаётся в архивах — возможны встречи с прошлым.</div>
+        <hr>
+        <h3>▸ СОВЕТЫ ПО ВЫЖИВАНИЮ</h3>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li>Никогда не доверяйте «бесплатному» улучшению вентиляции.</li>
+            <li>В Тихих зонах не отключайте фонарь — но и не светите подолгу.</li>
+            <li>Проверяйте ID-чип: возможна подмена на чёрном рынке.</li>
+            <li>Если слышите стук азбукой Морзе — не отвечайте, пока не определите источник.</li>
+        </ul>
+        <div class="section-title">⏳ ПОСЛЕДНИЙ РЕЙС. НАДЕЖДА УМЕРЛА</div>
+        <p style="font-style: italic;">Земли больше нет. «Аэтерна» дрейфует в пустоте, Администрация следит за порядком, но гниль проникает в каждый стык. Ваше место — среди живых, которые всё ещё пытаются платить по счетам. Удачи, пассажир. Счётчик кислорода включён.</p>
+    </div>
+
+    <footer>
+        <span>✶ «Рейс 0.0: Aeterna» — ретро-футуристическая ролевая система выживания ✶ Данные с основного сервера ID: 0.0/AETERNA/STATIONLOG ✶</span><br>
+        <span style="font-size:0.7rem;">Все персонажи вымышлены, любое сходство с реальными должниками случайно. Администрация не несёт ответственности за встречи с отражениями из Зеркального коридора.</span>
+    </footer>
+</div>
+
+<script>
+    // механика вкладок
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-tab');
+            contents.forEach(content => content.classList.remove('active'));
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            btn.classList.add('active');
+        });
+    });
+</script>
+</body>
+</html>
+```
